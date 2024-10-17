@@ -18,7 +18,7 @@
             margin-bottom: 20px;
         }
         .button {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -37,28 +37,8 @@
         .button:active {
             transform: scale(0.9);
         }
-        .circle {
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-        }
-        .shop {
-            display: none;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 20px;
-            margin-top: 20px;
-            transition: max-height 0.5s ease;
-            max-height: 0;
-            overflow: hidden;
-        }
-        .shop.visible {
-            display: block;
-            max-height: 400px; /* Adjust this as needed */
-        }
-        .shop-item {
-            margin-bottom: 10px;
-            list-style-type: none;
+        .upgrade {
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -66,28 +46,13 @@
     <h1>Fatpet Incremental Game</h1>
     <h2>Fatpet Weight: <span id="weight">0</span> kg</h2>
     <h2>Food per Click: <span id="foodPerClick">1</span> kg</h2>
+    <h2>Auto Feeder Increment: <span id="autoFeederIncrement">0</span> kg</h2>
     <h2>Food per Second: <span id="foodPerSecond">0</span> kg</h2>
-    <h2>Auto Feeder Time: <span id="autoFeederTime">1.5</span> seconds</h2>
-
-    <!-- Fatpet Clicker Button -->
-    <button class="button circle" id="feedButton">Feed!</button>
-
-    <!-- Shop Toggle Button -->
-    <button class="button" id="toggleShopButton">Toggle Shop</button>
-
-    <!-- Shop Container -->
-    <div class="shop" id="shop">
-        <ul>
-            <li class="shop-item">
-                <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
-            </li>
-            <li class="shop-item">
-                <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
-            </li>
-            <li class="shop-item">
-                <button class="button" id="upgradeFeederIncrement">Upgrade Auto-Feeder Increment (Cost: <span id="feederIncrementCost">50</span> kg)</button>
-            </li>
-        </ul>
+    <button class="button" id="feedButton">Feed the Fatpet!</button>
+    <div class="upgrade">
+        <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
+        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
+        <button class="button" id="upgradeFeederIncrement">Upgrade Auto-Feeder Increment (Cost: <span id="feederIncrementCost">50</span> kg)</button>
     </div>
 
     <script>
@@ -97,31 +62,30 @@
         let feederIncrementCost = 50;
         let autoFeederCost = 25;
         let upgradeFoodCost = 10;
-        let second = 1.5; // Time interval in seconds
+        let second = 1;
         let interval;
 
-        // Fatpet clicker button functionality
+        // Function to start or reset the interval
+        function startAutoFeeder() {
+            if (interval) {
+                clearInterval(interval);  // Clear the existing interval
+            }
+            interval = setInterval(function() {
+                weight += foodPerSecond;
+                updateDisplay();
+            }, second * 1000); // Use updated 'second' for the interval
+        }
+
         document.getElementById('feedButton').onclick = function() {
             weight += foodPerClick;
             updateDisplay();
         };
 
-        // Shop toggle button functionality
-        document.getElementById('toggleShopButton').onclick = function() {
-            const shop = document.getElementById('shop');
-            if (shop.classList.contains('visible')) {
-                shop.classList.remove('visible');
-            } else {
-                shop.classList.add('visible');
-            }
-        };
-
-        // Upgrade functionality
         document.getElementById('upgradeFood').onclick = function() {
             if (weight >= upgradeFoodCost) {
                 weight -= upgradeFoodCost;
                 foodPerClick++;
-                upgradeFoodCost += 10;
+                upgradeFoodCost += 10; // Increase the cost for the next upgrade
                 updateDisplay();
             } else {
                 alert("Not enough weight to upgrade food!");
@@ -134,6 +98,7 @@
                 foodPerSecond += 2; 
                 autoFeederCost += 25;
                 updateDisplay();
+                startAutoFeeder(); // Start the feeder after upgrading
             } else {
                 alert("Not enough weight to upgrade auto-feeder!");
             }
@@ -142,34 +107,29 @@
         document.getElementById('upgradeFeederIncrement').onclick = function() {
             if (weight >= feederIncrementCost) {
                 weight -= feederIncrementCost;
-                second = Math.max(0.5, second - 0.05); // Decrease the time, but don't go below 0.5 seconds
+                if (second > 0.0001) { // Prevent second from becoming negative or too small
+                    second -= 0.05; 
+                }
                 feederIncrementCost += 50;
-                updateInterval();
                 updateDisplay();
+                startAutoFeeder(); // Restart the feeder with updated time
             } else {
-                alert("Not enough weight to upgrade feeder increment!");
+                alert("Not enough weight to upgrade auto-feeder increment!");
             }
         };
-
-        function updateInterval() {
-            clearInterval(interval);
-            interval = setInterval(function() {
-                weight += foodPerSecond;
-                updateDisplay();
-            }, second * 1000); // Convert seconds to milliseconds
-        }
 
         function updateDisplay() {
             document.getElementById('weight').textContent = weight;
             document.getElementById('foodPerClick').textContent = foodPerClick;
             document.getElementById('foodPerSecond').textContent = foodPerSecond;
-            document.getElementById('autoFeederTime').textContent = second.toFixed(2);
+            document.getElementById('autoFeederIncrement').textContent = foodPerSecond; 
             document.getElementById('upgradeFoodCost').textContent = upgradeFoodCost;
             document.getElementById('autoFeederCost').textContent = autoFeederCost;
             document.getElementById('feederIncrementCost').textContent = feederIncrementCost;
         }
 
-        updateInterval(); // Initialize the auto feeder interval
+        // Start the auto feeder initially with the default time
+        startAutoFeeder();
     </script>
 </body>
 </html>
