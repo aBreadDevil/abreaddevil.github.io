@@ -37,11 +37,28 @@
         .button:active {
             transform: scale(0.9);
         }
-        .upgrade {
-            margin: 20px 0;
+        .circle {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
         }
-        .upgrade p {
-            margin: 5px 0;
+        .shop {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-top: 20px;
+            transition: max-height 0.5s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .shop.visible {
+            display: block;
+            max-height: 400px; /* Adjust this as needed */
+        }
+        .shop-item {
+            margin-bottom: 10px;
+            list-style-type: none;
         }
     </style>
 </head>
@@ -51,11 +68,26 @@
     <h2>Food per Click: <span id="foodPerClick">1</span> kg</h2>
     <h2>Food per Second: <span id="foodPerSecond">0</span> kg</h2>
     <h2>Auto Feeder Time: <span id="autoFeederTime">1.5</span> seconds</h2>
-    <div class="upgrade">
-        <button class="button" id="feedButton">Feed the Fatpet!</button>
-        <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
-        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
-        <button class="button" id="upgradeFeederIncrement">Upgrade Auto-Feeder Increment (Cost: <span id="feederIncrementCost">50</span> kg)</button>
+
+    <!-- Fatpet Clicker Button -->
+    <button class="button circle" id="feedButton">Feed!</button>
+
+    <!-- Shop Toggle Button -->
+    <button class="button" id="toggleShopButton">Toggle Shop</button>
+
+    <!-- Shop Container -->
+    <div class="shop" id="shop">
+        <ul>
+            <li class="shop-item">
+                <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
+            </li>
+            <li class="shop-item">
+                <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
+            </li>
+            <li class="shop-item">
+                <button class="button" id="upgradeFeederIncrement">Upgrade Auto-Feeder Increment (Cost: <span id="feederIncrementCost">50</span> kg)</button>
+            </li>
+        </ul>
     </div>
 
     <script>
@@ -68,16 +100,28 @@
         let second = 1.5; // Time interval in seconds
         let interval;
 
+        // Fatpet clicker button functionality
         document.getElementById('feedButton').onclick = function() {
             weight += foodPerClick;
             updateDisplay();
         };
 
+        // Shop toggle button functionality
+        document.getElementById('toggleShopButton').onclick = function() {
+            const shop = document.getElementById('shop');
+            if (shop.classList.contains('visible')) {
+                shop.classList.remove('visible');
+            } else {
+                shop.classList.add('visible');
+            }
+        };
+
+        // Upgrade functionality
         document.getElementById('upgradeFood').onclick = function() {
             if (weight >= upgradeFoodCost) {
                 weight -= upgradeFoodCost;
                 foodPerClick++;
-                upgradeFoodCost += 10; // Increase the cost for the next upgrade
+                upgradeFoodCost += 10;
                 updateDisplay();
             } else {
                 alert("Not enough weight to upgrade food!");
@@ -100,7 +144,7 @@
                 weight -= feederIncrementCost;
                 second = Math.max(0.5, second - 0.05); // Decrease the time, but don't go below 0.5 seconds
                 feederIncrementCost += 50;
-                updateInterval(); // Update the auto feeder interval
+                updateInterval();
                 updateDisplay();
             } else {
                 alert("Not enough weight to upgrade feeder increment!");
