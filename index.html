@@ -18,7 +18,7 @@
             margin-bottom: 20px;
         }
         .button {
-            background-color: #4CAF50; /* Green */
+            background-color: #4CAF50;
             border: none;
             color: white;
             padding: 15px 32px;
@@ -40,29 +40,41 @@
         .upgrade {
             margin: 20px 0;
         }
-        .upgrade p {
-            margin: 5px 0;
-        }
     </style>
 </head>
 <body>
     <h1>Fatpet Incremental Game</h1>
     <h2>Fatpet Weight: <span id="weight">0</span> kg</h2>
     <h2>Food per Click: <span id="foodPerClick">1</span> kg</h2>
+    <h2>Auto Feeder Increment: <span id="autoFeederIncrement">0</span> kg</h2>
     <h2>Food per Second: <span id="foodPerSecond">0</span> kg</h2>
     <button class="button" id="feedButton">Feed the Fatpet!</button>
     <div class="upgrade">
         <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
-        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">50</span> kg)</button>
+        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
+        <button class="button" id="upgradeFeederIncrement">Upgrade Auto-Feeder Increment (Cost: <span id="feederIncrementCost">50</span> kg)</button>
     </div>
 
     <script>
         let weight = 0;
-        let fun = 0;
         let foodPerClick = 1;
         let foodPerSecond = 0;
-        let autoFeederCost = 50;
+        let feederIncrementCost = 50;
+        let autoFeederCost = 25;
         let upgradeFoodCost = 10;
+        let second = 1.5;
+        let interval;
+
+        // Function to start or reset the interval
+        function startAutoFeeder() {
+            if (interval) {
+                clearInterval(interval);  // Clear the existing interval
+            }
+            interval = setInterval(function() {
+                weight += foodPerSecond;
+                updateDisplay();
+            }, second * 1000); // Use updated 'second' for the interval
+        }
 
         document.getElementById('feedButton').onclick = function() {
             weight += foodPerClick;
@@ -84,10 +96,25 @@
             if (weight >= autoFeederCost) {
                 weight -= autoFeederCost;
                 foodPerSecond += 2; 
-                autoFeederCost += 50;
+                autoFeederCost += 25;
                 updateDisplay();
+                startAutoFeeder(); // Start the feeder after upgrading
             } else {
                 alert("Not enough weight to upgrade auto-feeder!");
+            }
+        };
+
+        document.getElementById('upgradeFeederIncrement').onclick = function() {
+            if (weight >= feederIncrementCost) {
+                weight -= feederIncrementCost;
+                if (second > 0.1) { // Prevent second from becoming negative or too small
+                    second -= 0.05; 
+                }
+                feederIncrementCost += 50;
+                updateDisplay();
+                startAutoFeeder(); // Restart the feeder with updated time
+            } else {
+                alert("Not enough weight to upgrade auto-feeder increment!");
             }
         };
 
@@ -95,14 +122,14 @@
             document.getElementById('weight').textContent = weight;
             document.getElementById('foodPerClick').textContent = foodPerClick;
             document.getElementById('foodPerSecond').textContent = foodPerSecond;
+            document.getElementById('autoFeederIncrement').textContent = foodPerSecond; 
             document.getElementById('upgradeFoodCost').textContent = upgradeFoodCost;
             document.getElementById('autoFeederCost').textContent = autoFeederCost;
+            document.getElementById('feederIncrementCost').textContent = feederIncrementCost;
         }
 
-        setInterval(function() {
-            weight += foodPerSecond; 
-            updateDisplay();
-        }, 1000); 
+        // Start the auto feeder initially with the default time
+        startAutoFeeder();
     </script>
 </body>
 </html>
