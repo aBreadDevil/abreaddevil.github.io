@@ -43,6 +43,9 @@
         .upgrade p {
             margin: 5px 0;
         }
+        #autoFeederUpgrade, #timeUpgrade {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -50,10 +53,14 @@
     <h2>Fatpet Weight: <span id="weight">0</span> kg</h2>
     <h2>Food per Click: <span id="foodPerClick">1</span> kg</h2>
     <h2>Food per Second: <span id="foodPerSecond">0</span> kg</h2>
+    <h2>Auto-Feed Interval: <span id="feedInterval">1000</span> ms</h2>
     <button class="button" id="feedButton">Feed the Fatpet!</button>
     <div class="upgrade">
         <button class="button" id="upgradeFood">Upgrade Food (Cost: <span id="upgradeFoodCost">10</span> kg)</button>
-        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">50</span> kg)</button>
+        <button class="button" id="upgradeAutoFeeder">Upgrade Auto-Feeder (Cost: <span id="autoFeederCost">25</span> kg)</button>
+        <div id="autoFeederUpgrade">
+            <button class="button" id="upgradeTime">Upgrade Auto-Feed Speed (Cost: <span id="upgradeTimeCost">50</span> kg)</button>
+        </div>
     </div>
 
     <script>
@@ -61,8 +68,11 @@
         let fun = 0;
         let foodPerClick = 1;
         let foodPerSecond = 0;
-        let autoFeederCost = 50;
+        let autoFeederCost = 25;
         let upgradeFoodCost = 10;
+        let autoFeedInterval = 1000; 
+        let upgradeTimeCost = 50;
+        let intervalID;
 
         document.getElementById('feedButton').onclick = function() {
             weight += foodPerClick;
@@ -73,36 +83,4 @@
             if (weight >= upgradeFoodCost) {
                 weight -= upgradeFoodCost;
                 foodPerClick++;
-                upgradeFoodCost += 10; // Increase the cost for the next upgrade
-                updateDisplay();
-            } else {
-                alert("Not enough weight to upgrade food!");
-            }
-        };
-
-        document.getElementById('upgradeAutoFeeder').onclick = function() {
-            if (weight >= autoFeederCost) {
-                weight -= autoFeederCost;
-                foodPerSecond += 2; 
-                autoFeederCost += 50;
-                updateDisplay();
-            } else {
-                alert("Not enough weight to upgrade auto-feeder!");
-            }
-        };
-
-        function updateDisplay() {
-            document.getElementById('weight').textContent = weight;
-            document.getElementById('foodPerClick').textContent = foodPerClick;
-            document.getElementById('foodPerSecond').textContent = foodPerSecond;
-            document.getElementById('upgradeFoodCost').textContent = upgradeFoodCost;
-            document.getElementById('autoFeederCost').textContent = autoFeederCost;
-        }
-
-        setInterval(function() {
-            weight += foodPerSecond; 
-            updateDisplay();
-        }, 1000); 
-    </script>
-</body>
-</html>
+                upgradeFoodCost += 10
