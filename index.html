@@ -227,7 +227,7 @@
         let foodPerSecond = 0;
         let upgradeFoodCost = 10;
         let autoFeederCost = 25;
-        let autoFeederInterval = 100;
+        let autoFeederInterval = 1;
         let autoFeederActive = true;
 
         const isFirstVisit = localStorage.getItem('firstVisit') === null;
@@ -326,7 +326,7 @@
         function startAutoFeeder() {
             setInterval(() => {
                 if (autoFeederActive) {
-                    weight += foodPerSecond / 10;
+                    weight += foodPerSecond / 1000;
                     saveGame();
                     updateDisplay();
                 }
