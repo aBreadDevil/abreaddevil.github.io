@@ -305,7 +305,7 @@
 
             if (lastVisit) {
                 const timeElapsed = Math.floor((currentTime - lastVisit) / 1000);
-                const offlineEarnings = Math.round(timeElapsed * (foodPerSecond / 100)); 
+                const offlineEarnings = Math.round(timeElapsed * (foodPerSecond)); 
                 weight += offlineEarnings; 
                 saveGame();
                 document.getElementById('offlineEarnings').textContent = offlineEarnings; 
@@ -322,16 +322,16 @@
                 popup.style.visibility = 'hidden'; 
             }, 500); 
         };
-
         function startAutoFeeder() {
             setInterval(() => {
                 if (autoFeederActive) {
-                    weight += foodPerSecond / 1000;
+                    weight += foodPerSecond / 1000; // Add the foodPerSecond amount directly.
                     saveGame();
                     updateDisplay();
                 }
-            }, autoFeederInterval);
+            }, 1); // 1 second interval
         }
+
 
         function updateDisplay() {
             document.getElementById('weight').textContent = Math.round(weight);
