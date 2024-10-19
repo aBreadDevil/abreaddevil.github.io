@@ -110,6 +110,7 @@
             height: 100%;
             font-family: 'Fredoka', sans-serif;
         }
+
         .buttonbox:hover {
             background-color: #439447;
         }
@@ -304,7 +305,7 @@
 
             if (lastVisit) {
                 const timeElapsed = Math.floor((currentTime - lastVisit) / 1000);
-                const offlineEarnings = timeElapsed * foodPerSecond; 
+                const offlineEarnings = Math.round(timeElapsed * (foodPerSecond / 100)); 
                 weight += offlineEarnings; 
                 saveGame();
                 document.getElementById('offlineEarnings').textContent = offlineEarnings; 
@@ -325,7 +326,7 @@
         function startAutoFeeder() {
             setInterval(() => {
                 if (autoFeederActive) {
-                    weight += foodPerSecond;
+                    weight += foodPerSecond / 10;
                     saveGame();
                     updateDisplay();
                 }
@@ -333,9 +334,9 @@
         }
 
         function updateDisplay() {
-            document.getElementById('weight').textContent = weight;
-            document.getElementById('foodPerClick').textContent = foodPerClick;
-            document.getElementById('foodPerSecond').textContent = foodPerSecond;
+            document.getElementById('weight').textContent = Math.round(weight);
+            document.getElementById('foodPerClick').textContent = Math.round(foodPerClick);
+            document.getElementById('foodPerSecond').textContent = Math.round(foodPerSecond);
             localStorage.setItem('weight', weight); 
         }
 
